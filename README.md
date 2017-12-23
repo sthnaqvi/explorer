@@ -1,6 +1,6 @@
-# ETHExplorer V2 based off github.com/etherparty/explorer
+# Ethererum Blockchain Explorer based off github.com/etherparty/explorer
 
-![ETHExplorer V2 Screenshot](http://i.imgur.com/wgROAS9.png)
+![Ethererum Blockchain Explorer Screenshot](http://i.imgur.com/wi8O2fo.png)
 
 ##License
 
@@ -14,13 +14,12 @@ Discuss this project at: [Reddit Page on /r/ethreum](https://www.reddit.com/r/et
 
 ##Donations
 
-ETH Address: 0xee298ae561bD7BE6e1040AFf281202E0b0646BA6
+ETH Address: 0xbe76Bc7079B2207932705594bA4F8e5a1BA7545F
 
-BTC Address: 1AGxSzTPkthdNKfY5usVLwKDLk9i6sPTQj
 
 ##Installation
 
-`git clone https://github.com/carsenk/explorer`
+`git clone https://github.com/sthnaqvi/ethereum-blockchain-explorer`
 
 `npm install`
 
@@ -61,5 +60,6 @@ Then visit http://localhost:8000 in your browser of choice after you npm start t
 -Total/Current Difficulty
 
 -Realtime latest blocks and recent transactions
+*If you want to disable auto refresh/auto new block show , Just comment line no 13-22 at: [app/scripts/controllers/mainController.js](https://github.com/sthnaqvi/ethereum-blockchain-explorer/blob/0d342ffa71d9d090b5a6116ee05d246ee61440c8/app/scripts/controllers/mainController.js#L13-L22)
 
 -Other random blockchain info stats were added

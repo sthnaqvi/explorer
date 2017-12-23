@@ -51,8 +51,8 @@ angular.module('ethExplorer')
 
 
         function getHashrate()	{
-          $.getJSON("https://etherchain.org/api/miningEstimator", function(json) {
-            var hr = json.data[0].hashRate;
+          $.getJSON("https://www.etherchain.org/api/miningEstimator", function(json) {
+            var hr = json.hashrate;
             $scope.hashrate = hr;
        	});
       }

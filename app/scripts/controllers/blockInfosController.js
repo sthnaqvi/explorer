@@ -1,63 +1,56 @@
 var BigNumber = require('bignumber.js');
 angular.module('ethExplorer')
-    .controller('blockInfosCtrl', function ($rootScope, $scope, $location, $routeParams,$q) {
+    .controller('blockInfosCtrl', function ($rootScope, $scope, $location, $routeParams, $q) {
 
-        $scope.init=function()
-        {
-
-
-            $scope.blockId=$routeParams.blockId;
-
-
-            if($scope.blockId!==undefined) {
-
+        $scope.init = function () {
+            $scope.blockId = $routeParams.blockId;
+            if ($scope.blockId !== undefined) {
                 getBlockInfos()
-                    .then(function(result){
+                    .then(function (result) {
                         var number = web3.eth.blockNumber;
+                        $scope.result = result;
 
-                    $scope.result = result;
+                        $scope.numberOfUncles = result.uncles.length;
 
-                    $scope.numberOfUncles = result.uncles.length;
+                        //if ($scope.numberOfUncles!=0) {
+                        //	uncle1=result.uncles[0];
+                        //	console.log(web3.eth.getUncle(uncle1));
+                        //}
 
-                    //if ($scope.numberOfUncles!=0) {
-                    //	uncle1=result.uncles[0];
-                    //	console.log(web3.eth.getUncle(uncle1));
-                    //}
-
-                    if(result.hash!==undefined){
-                        $scope.hash = result.hash;
-                    }
-                    else{
-                        $scope.hash ='pending';
-                    }
-                    if(result.miner!==undefined){
-                        $scope.miner = result.miner;
-                    }
-                    else{
-                        $scope.miner ='pending';
-                    }
-                    $scope.gasLimit = result.gasLimit;
-                    $scope.gasUsed = result.gasUsed;
-                    $scope.nonce = result.nonce;
-                    var diff = ("" + result.difficulty).replace(/['"]+/g, '') / 1000000000000;
-                    $scope.difficulty = diff.toFixed(3) + " T";
-                    $scope.gasLimit = new BigNumber(result.gasLimit).toFormat(0) + " m/s"; // that's a string
-                    $scope.gasUsed = new BigNumber(result.gasUsed).toFormat(0) + " m/s";
-                    $scope.nonce = result.nonce;
-                    $scope.number = result.number;
-                    $scope.parentHash = result.parentHash;
-                    $scope.uncledata = result.sha3Uncles;
-                    $scope.rootHash = result.stateRoot;
-                    $scope.blockNumber = result.number;
-                    $scope.timestamp = new Date(result.timestamp * 1000).toUTCString();
-                    $scope.extraData = result.extraData.slice(2);
-                    $scope.dataFromHex = hex2a(result.extraData.slice(2));
-                    $scope.size = result.size;
-                    $scope.firstBlock = false;
-                    $scope.lastBlock = false;
-                    if ($scope.blockNumber !== undefined){
+                        if (result.hash !== undefined) {
+                            $scope.hash = result.hash;
+                        }
+                        else {
+                            $scope.hash = 'pending';
+                        }
+                        if (result.miner !== undefined) {
+                            $scope.miner = result.miner;
+                        }
+                        else {
+                            $scope.miner = 'pending';
+                        }
+                        $scope.gasLimit = result.gasLimit;
+                        $scope.gasUsed = result.gasUsed;
+                        $scope.nonce = result.nonce;
+                        var diff = ("" + result.difficulty).replace(/['"]+/g, '') / 1000000000000;
+                        $scope.difficulty = diff.toFixed(3) + " T";
+                        $scope.gasLimit = new BigNumber(result.gasLimit).toFormat(0) + " m/s"; // that's a string
+                        $scope.gasUsed = new BigNumber(result.gasUsed).toFormat(0) + " m/s";
+                        $scope.nonce = result.nonce;
+                        $scope.number = result.number;
+                        $scope.parentHash = result.parentHash;
+                        $scope.uncledata = result.sha3Uncles;
+                        $scope.rootHash = result.stateRoot;
+                        $scope.blockNumber = result.number;
+                        $scope.timestamp = new Date(result.timestamp * 1000).toUTCString();
+                        $scope.extraData = result.extraData.slice(2);
+                        $scope.dataFromHex = hex2a(result.extraData.slice(2));
+                        $scope.size = result.size;
+                        $scope.firstBlock = false;
+                        $scope.lastBlock = false;
+                        if ($scope.blockNumber !== undefined) {
                             $scope.conf = number - $scope.blockNumber + " Confirmations";
-                            if (number === $scope.blockNumber){
+                            if (number === $scope.blockNumber) {
                                 $scope.conf = 'Unconfirmed';
                                 $scope.lastBlock = true;
                             }
@@ -66,9 +59,9 @@ angular.module('ethExplorer')
                             }
                         }
 
-                        if ($scope.blockNumber !== undefined){
+                        if ($scope.blockNumber !== undefined) {
                             var info = web3.eth.getBlock($scope.blockNumber);
-                            if (info !== undefined){
+                            if (info !== undefined) {
                                 var newDate = new Date();
                                 newDate.setTime(info.timestamp * 1000);
                                 $scope.time = newDate.toUTCString();
@@ -81,14 +74,14 @@ angular.module('ethExplorer')
             }
 
 
-            function getBlockInfos(){
+            function getBlockInfos() {
                 var deferred = $q.defer();
 
-                web3.eth.getBlock($scope.blockId,function(error, result) {
-                    if(!error){
+                web3.eth.getBlock($scope.blockId, function (error, result) {
+                    if (!error) {
                         deferred.resolve(result);
                     }
-                    else{
+                    else {
                         deferred.reject(error);
                     }
                 });
@@ -103,13 +96,13 @@ angular.module('ethExplorer')
         // parse transactions
         $scope.transactions = []
 
-        web3.eth.getBlockTransactionCount($scope.blockId, function(error, result){
+        web3.eth.getBlockTransactionCount($scope.blockId, function (error, result) {
             var txCount = result;
             $scope.numberOfTransactions = txCount;
             for (var blockIdx = 0; blockIdx < txCount; blockIdx++) {
-                web3.eth.getTransactionFromBlock($scope.blockId, blockIdx, function(error, result) {
-	                // console.log("Result: ", result);
-                    web3.eth.getTransactionReceipt(result.hash, function(error, receipt) {
+                web3.eth.getTransactionFromBlock($scope.blockId, blockIdx, function (error, result) {
+                    // console.log("Result: ", result);
+                    web3.eth.getTransactionReceipt(result.hash, function (error, receipt) {
                         var transaction = {
                             id: receipt.transactionHash,
                             hash: receipt.transactionHash,
@@ -128,12 +121,12 @@ angular.module('ethExplorer')
             }
         });
 
-function hex2a(hexx) {
-    var hex = hexx.toString(); //force conversion
-    var str = '';
-    for (var i = 0; i < hex.length; i += 2)
-        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+        function hex2a(hexx) {
+            var hex = hexx.toString(); //force conversion
+            var str = '';
+            for (var i = 0; i < hex.length; i += 2)
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
 
-    return str;
-}
-});
+            return str;
+        }
+    });

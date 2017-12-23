@@ -12,12 +12,24 @@
 </div>
 <div class="container" style="padding-top: 20px;">
   <div class="row">
-    <div class="col-md-2" align="center"><div class="boxi">Current Block:<br />{{ blockNumber }}</div></div>
-    <div class="col-md-2" align="center"><div class="boxi">ETH/USD Price:<br />{{ ethprice || "Loading" }}</div></div>
-    <div class="col-md-2" align="center"><div class="boxi">Gas Limit:<br />{{ gasLimit }}</div></div>
-    <div class="col-md-2" align="center"><div class="boxi">Block Time:<br />{{ blocktime }} second(s)</div></div>
-    <div class="col-md-2" align="center"><div class="boxi">Current Diff:<br />{{ difficulty | diffFormat }}</div></div>
-    <div class="col-md-2" align="center"><div class="boxi">Hashrate:<br />{{ hashrate || "Loading" | hashFormat }}</div></div>
+      <div class="col-md-2" align="center">
+          <div class="boxi">Current Block:<br/>{{ currentBlockNumber }}</div>
+      </div>
+      <div class="col-md-2" align="center">
+          <div class="boxi">KCN/USD Price:<br/>{{ ethprice || "Loading.." }}</div>
+      </div>
+      <div class="col-md-2" align="center">
+          <div class="boxi">Gas Limit:<br/>{{ gasLimit || "Loading.." }}</div>
+      </div>
+      <div class="col-md-2" align="center">
+          <div class="boxi">Block Time:<br/>{{ blocktime?blocktime+" second(s)":false || "Loading.." }}</div>
+      </div>
+      <div class="col-md-2" align="center">
+          <div class="boxi">Current Diff:<br/>{{ difficulty || "Loading.." | diffFormat }}</div>
+      </div>
+      <div class="col-md-2" align="center">
+          <div class="boxi">Hashrate:<br/>{{ hashrate|| "Loading.." | hashFormat }}</div>
+      </div>
   </div>
   <h1><i class="fa fa-cubes"></i> Recent Blocks <small>Most Recent Blocks in the Ethereum Network</small></h1><br />
   <div class="table-responsive">
