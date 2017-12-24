@@ -115,6 +115,6 @@ angular.module('ethExplorer')
             }
         };
         $scope.init();
-        console.log($scope.result);
+        // console.log($scope.result);
 
 });
