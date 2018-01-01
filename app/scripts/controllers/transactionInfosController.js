@@ -10,7 +10,7 @@ angular.module('ethExplorer')
 
 
 
-            if($scope.txId!==undefined) { // add a test to check if it match tx paterns to avoid useless API call, clients are not obliged to come from the search form...
+            if(!(!$scope.txId)) { // add a test to check if it match tx paterns to avoid useless API call, clients are not obliged to come from the search form...
 
                 getTransactionInfos()
                     .then(function(result){
@@ -19,13 +19,13 @@ angular.module('ethExplorer')
 
                     $scope.result = result;
 
-                    if(result.blockHash!==undefined){
+                    if(!(!result.blockHash)){
                         $scope.blockHash = result.blockHash;
                     }
                     else{
                         $scope.blockHash ='pending';
                     }
-                    if(result.blockNumber!==undefined){
+                    if(!(!result.blockNumber)){
                         $scope.blockNumber = result.blockNumber;
                     }
                     else{
@@ -43,16 +43,16 @@ angular.module('ethExplorer')
                     //$scope.ethValue = web3.fromWei(result.value[0], "ether"); Newer method but has ""
                     $scope.ethValue = result.value.c[0] / 10000;
                     $scope.txprice = web3.fromWei(result.gas * result.gasPrice, "ether") + " ETH";
-                    if($scope.blockNumber!==undefined){
+                    if(!(!$scope.blockNumber)){
                         $scope.conf = number - $scope.blockNumber;
                         if($scope.conf===0){
                             $scope.conf='unconfirmed'; //TODO change color button when unconfirmed... ng-if or ng-class
                         }
                     }
                         //TODO Refactor this logic, asynchron calls + services....
-                    if($scope.blockNumber!==undefined){
+                    if(!(!$scope.blockNumber)){
                         var info = web3.eth.getBlock($scope.blockNumber);
-                        if(info!==undefined){
+                        if(!(!info)){
                             $scope.time = info.timestamp;
                         }
                     }

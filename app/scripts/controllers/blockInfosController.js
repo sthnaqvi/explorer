@@ -4,7 +4,7 @@ angular.module('ethExplorer')
 
         $scope.init = function () {
             $scope.blockId = $routeParams.blockId;
-            if ($scope.blockId !== undefined) {
+            if (!(!$scope.blockId)) {
                 getBlockInfos()
                     .then(function (result) {
                         var number = web3.eth.blockNumber;
@@ -17,13 +17,13 @@ angular.module('ethExplorer')
                         //	console.log(web3.eth.getUncle(uncle1));
                         //}
 
-                        if (result.hash !== undefined) {
+                        if (!(!result.hash)) {
                             $scope.hash = result.hash;
                         }
                         else {
                             $scope.hash = 'pending';
                         }
-                        if (result.miner !== undefined) {
+                        if (!(!result.miner)) {
                             $scope.miner = result.miner;
                         }
                         else {
@@ -48,7 +48,7 @@ angular.module('ethExplorer')
                         $scope.size = result.size;
                         $scope.firstBlock = false;
                         $scope.lastBlock = false;
-                        if ($scope.blockNumber !== undefined) {
+                        if (!(!$scope.blockNumber)) {
                             $scope.conf = number - $scope.blockNumber + " Confirmations";
                             if (number === $scope.blockNumber) {
                                 $scope.conf = 'Unconfirmed';
@@ -59,9 +59,9 @@ angular.module('ethExplorer')
                             }
                         }
 
-                        if ($scope.blockNumber !== undefined) {
+                        if (!(!$scope.blockNumber)){
                             var info = web3.eth.getBlock($scope.blockNumber);
-                            if (info !== undefined) {
+                            if (!(!info)){
                                 var newDate = new Date();
                                 newDate.setTime(info.timestamp * 1000);
                                 $scope.time = newDate.toUTCString();

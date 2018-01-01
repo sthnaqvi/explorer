@@ -19,7 +19,7 @@ angular.module('ethExplorer')
             $scope.addressId=$routeParams.addressId;
             var addressId = $routeParams.addressId;
 
-            if($scope.addressId!==undefined) {
+            if(!(!$scope.addressId)) {
             	getAddressBalance()
                     .then(function(result){
                     	$scope.balance = web3.fromWei(result).toNumber();
