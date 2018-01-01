@@ -1,6 +1,6 @@
 # ETH Block Explorer based off github.com/etherparty/explorer
 
-![ETH Block Explorer Screenshot](http://i.imgur.com/wi8O2fo.png)
+![ETH Block Explorer Screenshot](http://i.imgur.com/AjCIMKD.png)
 
 ##License
 
@@ -60,6 +60,6 @@ Then visit http://localhost:8000 in your browser of choice after you npm start t
 -Total/Current Difficulty
 
 -Realtime latest blocks and recent transactions
-*If you want to disable auto refresh/auto new block show , Just comment line no 13-22 at: [app/scripts/controllers/mainController.js](https://github.com/sthnaqvi/ethereum-blockchain-explorer/blob/0d342ffa71d9d090b5a6116ee05d246ee61440c8/app/scripts/controllers/mainController.js#L13-L22)
+*If you want to disable auto refresh/auto new block show , Just comment line no 13-22 at: [app/scripts/controllers/mainController.js](https://github.com/sthnaqvi/explorer/blob/3a08032fc8550a863ae49acf0bdd45bfe2d961d1/app/scripts/controllers/mainController.js#L13-L22)
 
 -Other random blockchain info stats were added
