@@ -1,6 +1,9 @@
 //var cryptoSocket = require('crypto-socket');
 var BigNumber = require('bignumber.js');
 angular.module('ethExplorer')
+    .controller('viewCtrl', function ($rootScope, $location) {
+        $rootScope.locationPath = $location.$$path;
+    })
     .controller('mainCtrl', function ($rootScope, $scope, $location) {
 
         // Display & update block list
@@ -28,102 +31,102 @@ angular.module('ethExplorer')
                 $scope.blockNum = currentBlockNumber;
                 if (!(!$scope.blockNum)) {
                     web3.eth.getBlock($scope.blockNum, function (err, blockNewest) {
-                        if (err)
-                            return console.log(err);
-                        if (!(!blockNewest))
-                        // difficulty
-                            $scope.difficulty = blockNewest.difficulty;
-
-                        // Gas Limit
-                        $scope.gasLimit = new BigNumber(blockNewest.gasLimit).toFormat(0) + " m/s";
-
-                        web3.eth.getBlock($scope.blockNum - 1, function (err, blockBefore) {
                             if (err)
                                 return console.log(err);
-                            $scope.blocktime = blockNewest.timestamp - blockBefore.timestamp;
-                        });
-                    }
+                            if (!(!blockNewest)) {
+                                // difficulty
+                                $scope.difficulty = blockNewest.difficulty;
+
+                                // Gas Limit
+                                $scope.gasLimit = new BigNumber(blockNewest.gasLimit).toFormat(0) + " m/s";
+
+                                web3.eth.getBlock($scope.blockNum - 1, function (err, blockBefore) {
+                                    if (err)
+                                        return console.log(err);
+                                    $scope.blocktime = blockNewest.timestamp - blockBefore.timestamp;
+                                });
+                            }
+                        }
+                    );
                 }
-            );
-        }
-    });
-}
-
-
-function getHashrate() {
-    $.getJSON("https://www.etherchain.org/api/miningEstimator", function (json) {
-        var hr = json.hashrate;
-        $scope.hashrate = hr;
-    });
-}
-
-function getETHRates() {
-    $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function (json) {
-        var price = Number(json[0].price_usd);
-        $scope.ethprice = "$" + price.toFixed(2);
-    });
-
-    $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function (json) {
-        var btcprice = Number(json[0].price_btc);
-        $scope.ethbtcprice = btcprice;
-    });
-
-    $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function (json) {
-        var cap = Number(json[0].market_cap_usd);
-        //console.log("Current ETH Market Cap: " + cap);
-        $scope.ethmarketcap = cap;
-    });
-}
-
-function updateTXList() {
-    web3.eth.getBlockNumber(function (err, currentBlockNumber) {
-        if (err)
-            return console.log(err);
-        $scope.txNumber = currentBlockNumber;
-        $scope.recenttransactions = [];
-
-        getTransactionsFromBlock(currentBlockNumber);
-
-        function getTransactionsFromBlock(blockNumber) {
-            web3.eth.getBlock(blockNumber, true, function (err, block) {
-                if (err) {
-                    console.log(err);
-                    return getTransactionsFromBlock(blockNumber);
-                }
-                $scope.recenttransactions = $scope.recenttransactions.concat(block.transactions);
-                $scope.$apply();
-                if ($scope.recenttransactions.length <= 10 && blockNumber > 0)
-                    getTransactionsFromBlock(--blockNumber)
             });
         }
-    });
-}
 
-function updateBlockList() {
-    web3.eth.getBlockNumber(function (err, currentBlockNumber) {
-        if (err)
-            return console.log(err);
-        $scope.currentBlockNumber = currentBlockNumber;
-        $scope.blocks = [];
-        getBlockDetails(currentBlockNumber);
 
-        function getBlockDetails(blockNumber) {
-            web3.eth.getBlock(blockNumber, function (err, block) {
-                if (err) {
-                    console.log(err);
-                    return getBlockDetails(blockNumber);
-                }
-                $scope.blocks = $scope.blocks.concat(block);
-                $scope.$apply();
-
-                if ($scope.blocks.length <= 10 && blockNumber > 0)
-                    getBlockDetails(--blockNumber)
-            })
+        function getHashrate() {
+            $.getJSON("https://www.etherchain.org/api/miningEstimator", function (json) {
+                var hr = json.hashrate;
+                $scope.hashrate = hr;
+            });
         }
-    });
-}
 
-})
+        function getETHRates() {
+            $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function (json) {
+                var price = Number(json[0].price_usd);
+                $scope.ethprice = "$" + price.toFixed(2);
+            });
+
+            $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function (json) {
+                var btcprice = Number(json[0].price_btc);
+                $scope.ethbtcprice = btcprice;
+            });
+
+            $.getJSON("https://api.coinmarketcap.com/v1/ticker/ethereum/", function (json) {
+                var cap = Number(json[0].market_cap_usd);
+                //console.log("Current ETH Market Cap: " + cap);
+                $scope.ethmarketcap = cap;
+            });
+        }
+
+        function updateTXList() {
+            web3.eth.getBlockNumber(function (err, currentBlockNumber) {
+                if (err)
+                    return console.log(err);
+                $scope.txNumber = currentBlockNumber;
+                $scope.recenttransactions = [];
+
+                getTransactionsFromBlock(currentBlockNumber);
+
+                function getTransactionsFromBlock(blockNumber) {
+                    web3.eth.getBlock(blockNumber, true, function (err, block) {
+                        if (err) {
+                            console.log(err);
+                            return getTransactionsFromBlock(blockNumber);
+                        }
+                        $scope.recenttransactions = $scope.recenttransactions.concat(block.transactions);
+                        $scope.$apply();
+                        if ($scope.recenttransactions.length <= 10 && blockNumber > 0)
+                            getTransactionsFromBlock(--blockNumber)
+                    });
+                }
+            });
+        }
+
+        function updateBlockList() {
+            web3.eth.getBlockNumber(function (err, currentBlockNumber) {
+                if (err)
+                    return console.log(err);
+                $scope.currentBlockNumber = currentBlockNumber;
+                $scope.blocks = [];
+                getBlockDetails(currentBlockNumber);
+
+                function getBlockDetails(blockNumber) {
+                    web3.eth.getBlock(blockNumber, function (err, block) {
+                        if (err) {
+                            console.log(err);
+                            return getBlockDetails(blockNumber);
+                        }
+                        $scope.blocks = $scope.blocks.concat(block);
+                        $scope.$apply();
+
+                        if ($scope.blocks.length <= 10 && blockNumber > 0)
+                            getBlockDetails(--blockNumber)
+                    })
+                }
+            });
+        }
+
+    })
 ;
 
 angular.module('filters', []).filter('truncate', function () {
