@@ -149,7 +149,6 @@ angular.module('ethExplorer', ['ngRoute','ui.bootstrap','filters','ngSanitize'])
         }
     };
 
-
     function goToBlockInfos(requestStr) {
         $location.path('/block/' + requestStr);
     }

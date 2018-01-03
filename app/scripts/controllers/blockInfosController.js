@@ -59,9 +59,9 @@ angular.module('ethExplorer')
                             }
                         }
 
-                        if (!(!$scope.blockNumber)){
+                        if (!(!$scope.blockNumber)) {
                             var info = web3.eth.getBlock($scope.blockNumber);
-                            if (!(!info)){
+                            if (!(!info)) {
                                 var newDate = new Date();
                                 newDate.setTime(info.timestamp * 1000);
                                 $scope.time = newDate.toUTCString();
@@ -72,7 +72,6 @@ angular.module('ethExplorer')
             } else {
                 $location.path("/");
             }
-
 
             function getBlockInfos() {
                 var deferred = $q.defer();
@@ -86,15 +85,13 @@ angular.module('ethExplorer')
                     }
                 });
                 return deferred.promise;
-
             }
-
 
         };
         $scope.init();
 
         // parse transactions
-        $scope.transactions = []
+        $scope.transactions = [];
 
         web3.eth.getBlockTransactionCount($scope.blockId, function (error, result) {
             var txCount = result;
@@ -112,7 +109,7 @@ angular.module('ethExplorer')
                             input: result.input.slice(2),
                             value: web3.fromWei(result.value, "ether"),
                             contractAddress: receipt.contractAddress
-                        }
+                        };
                         $scope.$apply(
                             $scope.transactions.push(transaction)
                         );
