@@ -45,7 +45,7 @@
                 Size
             </td>
             <td>
-                Date
+                Age
             </td>
             <td>
                 # of TXs
@@ -67,8 +67,8 @@
                 <td style="vertical-align:middle;">
                     {{ block.size | sizeFormat }}
                 </td>
-                <td style="vertical-align:middle;">
-                    {{ block.timestamp * 1000 | date:'medium' }}
+                <td style="vertical-align:middle;" title="{{ block.timestamp * 1000 | date:'medium' }}">
+                    {{ block.timestamp * 1000 | timestampAge }}
                 </td>
                 <td style="vertical-align:middle;">
                     {{ block.transactions.length }}
