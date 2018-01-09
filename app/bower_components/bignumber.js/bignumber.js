@@ -1,18 +1,18 @@
-/*! bignumber.js v2.3.0 https://github.com/MikeMcl/bignumber.js/LICENCE */
+/*! bignumber.js v5.0.0 https://github.com/MikeMcl/bignumber.js/LICENCE */
 
 ;(function (globalObj) {
     'use strict';
 
     /*
-      bignumber.js v2.3.0
+      bignumber.js v5.0.0
       A JavaScript library for arbitrary-precision arithmetic.
       https://github.com/MikeMcl/bignumber.js
-      Copyright (c) 2016 Michael Mclaughlin <M8ch88l@gmail.com>
+      Copyright (c) 2017 Michael Mclaughlin <M8ch88l@gmail.com>
       MIT Expat Licence
     */
 
 
-    var cryptoObj, parseNumeric,
+    var BigNumber,
         isNumeric = /^-?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i,
         mathceil = Math.ceil,
         mathfloor = Math.floor,
@@ -34,14 +34,12 @@
          */
         MAX = 1E9;                                   // 0 to MAX_INT32
 
-    if ( typeof crypto != 'undefined' ) cryptoObj = crypto;
-
 
     /*
      * Create and return a BigNumber constructor.
      */
-    function constructorFactory(configObj) {
-        var div,
+    function constructorFactory(config) {
+        var div, parseNumeric,
 
             // id tracks the caller function, so its name can be included in error messages.
             id = 0,
@@ -127,7 +125,7 @@
 
             // The maximum number of significant digits of the result of the toPower operation.
             // If POW_PRECISION is 0, there will be unlimited significant digits.
-            POW_PRECISION = 100,                     // 0 to MAX
+            POW_PRECISION = 0,                       // 0 to MAX
 
             // The format specification used by the BigNumber.prototype.toFormat method.
             FORMAT = {
@@ -161,7 +159,8 @@
             if ( !( x instanceof BigNumber ) ) {
 
                 // 'BigNumber() constructor call without new: {n}'
-                if (ERRORS) raise( 26, 'constructor call without new', n );
+                // See GitHub issue: #81.
+                //if (ERRORS) raise( 26, 'constructor call without new', n );
                 return new BigNumber( n, b );
             }
 
@@ -364,7 +363,7 @@
          * Ignore properties/parameters set to null or undefined.
          * Return an object with the properties current values.
          */
-        BigNumber.config = function () {
+        BigNumber.config = BigNumber.set = function () {
             var v, p,
                 i = 0,
                 r = {},
@@ -444,9 +443,19 @@
             // 'config() crypto unavailable: {crypto}'
             if ( has( p = 'CRYPTO' ) ) {
 
-                if ( v === !!v || v === 1 || v === 0 ) {
-                    CRYPTO = !!( v && cryptoObj );
-                    if ( v && !CRYPTO && ERRORS ) raise( 2, 'crypto unavailable', cryptoObj );
+                if ( v === true || v === false || v === 1 || v === 0 ) {
+                    if (v) {
+                        v = typeof crypto == 'undefined';
+                        if ( !v && crypto && (crypto.getRandomValues || crypto.randomBytes)) {
+                            CRYPTO = true;
+                        } else if (ERRORS) {
+                            raise( 2, 'crypto unavailable', v ? void 0 : crypto );
+                        } else {
+                            CRYPTO = false;
+                        }
+                    } else {
+                        CRYPTO = false;
+                    }
                 } else if (ERRORS) {
                     raise( 2, p + notBool, v );
                 }
@@ -536,9 +545,9 @@
                 if (CRYPTO) {
 
                     // Browsers supporting crypto.getRandomValues.
-                    if ( cryptoObj && cryptoObj.getRandomValues ) {
+                    if (crypto.getRandomValues) {
 
-                        a = cryptoObj.getRandomValues( new Uint32Array( k *= 2 ) );
+                        a = crypto.getRandomValues( new Uint32Array( k *= 2 ) );
 
                         for ( ; i < k; ) {
 
@@ -555,7 +564,7 @@
                             // Probability that v >= 9e15, is
                             // 7199254740992 / 9007199254740992 ~= 0.0008, i.e. 1 in 1251
                             if ( v >= 9e15 ) {
-                                b = cryptoObj.getRandomValues( new Uint32Array(2) );
+                                b = crypto.getRandomValues( new Uint32Array(2) );
                                 a[i] = b[0];
                                 a[i + 1] = b[1];
                             } else {
@@ -569,10 +578,10 @@
                         i = k / 2;
 
                     // Node.js supporting crypto.randomBytes.
-                    } else if ( cryptoObj && cryptoObj.randomBytes ) {
+                    } else if (crypto.randomBytes) {
 
                         // buffer
-                        a = cryptoObj.randomBytes( k *= 7 );
+                        a = crypto.randomBytes( k *= 7 );
 
                         for ( ; i < k; ) {
 
@@ -585,7 +594,7 @@
                                   ( a[i + 4] << 16 ) + ( a[i + 5] << 8 ) + a[i + 6];
 
                             if ( v >= 9e15 ) {
-                                cryptoObj.randomBytes(7).copy( a, i );
+                                crypto.randomBytes(7).copy( a, i );
                             } else {
 
                                 // 0 <= (v % 1e14) <= 99999999999999
@@ -594,13 +603,14 @@
                             }
                         }
                         i = k / 7;
-                    } else if (ERRORS) {
-                        raise( 14, 'crypto unavailable', cryptoObj );
+                    } else {
+                        CRYPTO = false;
+                        if (ERRORS) raise( 14, 'crypto unavailable', crypto );
                     }
                 }
 
-                // Use Math.random: CRYPTO is false or crypto is unavailable and ERRORS is false.
-                if (!i) {
+                // Use Math.random.
+                if (!CRYPTO) {
 
                     for ( ; i < k; ) {
                         v = random53bitInt();
@@ -626,7 +636,7 @@
                 } else {
 
                     // Remove leading elements which are zero and adjust exponent accordingly.
-                    for ( e = -1 ; c[0] === 0; c.shift(), e -= LOG_BASE);
+                    for ( e = -1 ; c[0] === 0; c.splice(0, 1), e -= LOG_BASE);
 
                     // Count the digits of the first element of c to determine leading zeros, and...
                     for ( i = 1, v = c[0]; v >= 10; v /= 10, i++);
@@ -719,7 +729,7 @@
 
                         if ( !d ) {
                             ++e;
-                            xc.unshift(1);
+                            xc = [1].concat(xc);
                         }
                     }
                 }
@@ -757,7 +767,7 @@
                     x[i] = temp % base;
                 }
 
-                if (carry) x.unshift(carry);
+                if (carry) x = [carry].concat(x);
 
                 return x;
             }
@@ -791,7 +801,7 @@
                 }
 
                 // Remove leading zeros.
-                for ( ; !a[0] && a.length > 1; a.shift() );
+                for ( ; !a[0] && a.length > 1; a.splice(0, 1) );
             }
 
             // x: dividend, y: divisor.
@@ -860,7 +870,7 @@
                     // Add zeros to make remainder as long as divisor.
                     for ( ; remL < yL; rem[remL++] = 0 );
                     yz = yc.slice();
-                    yz.unshift(0);
+                    yz = [0].concat(yz);
                     yc0 = yc[0];
                     if ( yc[1] >= base / 2 ) yc0++;
                     // Not necessary, but to prevent trial digit n > base, when using base 3.
@@ -931,7 +941,7 @@
                                 prodL = prod.length;
                             }
 
-                            if ( prodL < remL ) prod.unshift(0);
+                            if ( prodL < remL ) prod = [0].concat(prod);
 
                             // Subtract product from remainder.
                             subtract( rem, prod, remL, base );
@@ -972,7 +982,7 @@
                     more = rem[0] != null;
 
                     // Leading zero?
-                    if ( !qc[0] ) qc.shift();
+                    if ( !qc[0] ) qc.splice(0, 1);
                 }
 
                 if ( base == BASE ) {
@@ -1682,7 +1692,7 @@
             }
 
             // Remove leading zeros and adjust exponent accordingly.
-            for ( ; xc[0] == 0; xc.shift(), --ye );
+            for ( ; xc[0] == 0; xc.splice(0, 1), --ye );
 
             // Zero?
             if ( !xc[0] ) {
@@ -1846,11 +1856,11 @@
             // Only start adding at yc.length - 1 as the further digits of xc can be ignored.
             for ( a = 0; b; ) {
                 a = ( xc[--b] = xc[b] + yc[b] + a ) / BASE | 0;
-                xc[b] %= BASE;
+                xc[b] = BASE === xc[b] ? 0 : xc[b] % BASE;
             }
 
             if (a) {
-                xc.unshift(a);
+                xc = [a].concat(xc);
                 ++ye;
             }
 
@@ -2139,7 +2149,7 @@
             if (c) {
                 ++e;
             } else {
-                zc.shift();
+                zc.splice(0, 1);
             }
 
             return normalise( y, zc, e );
@@ -2519,7 +2529,6 @@
         };
 
 
-
         /*
          * Return as toString, but do not accept a base argument, and include the minus sign for
          * negative zero.
@@ -2541,17 +2550,9 @@
         };
 
 
-        // Aliases for BigDecimal methods.
-        //P.add = P.plus;         // P.add included above
-        //P.subtract = P.minus;   // P.sub included above
-        //P.multiply = P.times;   // P.mul included above
-        //P.divide = P.div;
-        //P.remainder = P.mod;
-        //P.compareTo = P.cmp;
-        //P.negate = P.neg;
+        P.isBigNumber = true;
 
-
-        if ( configObj != null ) BigNumber.config(configObj);
+        if ( config != null ) BigNumber.config(config);
 
         return BigNumber;
     }
@@ -2714,20 +2715,21 @@
     // EXPORT
 
 
-   // AMD.
+    BigNumber = constructorFactory();
+    BigNumber['default'] = BigNumber.BigNumber = BigNumber;
+
+
+    // AMD.
     if ( typeof define == 'function' && define.amd ) {
-        define( function () { return constructorFactory(); } );
+        define( function () { return BigNumber; } );
 
     // Node.js and other environments that support module.exports.
     } else if ( typeof module != 'undefined' && module.exports ) {
-        module.exports = constructorFactory();
-
-        // Split string stops browserify adding crypto shim.
-        if ( !cryptoObj ) try { cryptoObj = require('cry' + 'pto'); } catch (e) {}
+        module.exports = BigNumber;
 
     // Browser.
     } else {
         if ( !globalObj ) globalObj = typeof self != 'undefined' ? self : Function('return this')();
-        globalObj.BigNumber = constructorFactory();
+        globalObj.BigNumber = BigNumber;
     }
 })(this);

@@ -19,5 +19,6 @@ Thumbs.db
 # Application specific files
 venv
 node_modules/
+bower_components/
 .sass-cache
 .idea/

@@ -1,36 +1,31 @@
-"use strict";
+'use strict';
+
+var defaults = require('../core/core.defaults');
+var elements = require('../elements/index');
+var helpers = require('../helpers/index');
+
+defaults._set('radar', {
+	scale: {
+		type: 'radialLinear'
+	},
+	elements: {
+		line: {
+			tension: 0 // no bezier in radar
+		}
+	}
+});
 
 module.exports = function(Chart) {
 
-	var helpers = Chart.helpers;
-
-	Chart.defaults.radar = {
-		scale: {
-			type: "radialLinear"
-		},
-		elements: {
-			line: {
-				tension: 0 // no bezier in radar
-			}
-		}
-	};
-
 	Chart.controllers.radar = Chart.DatasetController.extend({
 
-		datasetElementType: Chart.elements.Line,
+		datasetElementType: elements.Line,
 
-		dataElementType: Chart.elements.Point,
+		dataElementType: elements.Point,
 
 		linkScales: helpers.noop,
 
-		addElementAndReset: function(index) {
-			Chart.DatasetController.prototype.addElementAndReset.call(this, index);
-
-			// Make sure bezier control points are updated
-			this.updateBezierControlPoints();
-		},
-
-		update: function update(reset) {
+		update: function(reset) {
 			var me = this;
 			var meta = me.getMeta();
 			var line = meta.dataset;
@@ -48,13 +43,14 @@ module.exports = function(Chart) {
 			helpers.extend(meta.dataset, {
 				// Utility
 				_datasetIndex: me.index,
+				_scale: scale,
 				// Data
 				_children: points,
 				_loop: true,
 				// Model
 				_model: {
 					// Appearance
-					tension: custom.tension ? custom.tension : helpers.getValueOrDefault(dataset.lineTension, lineElementOptions.tension),
+					tension: custom.tension ? custom.tension : helpers.valueOrDefault(dataset.lineTension, lineElementOptions.tension),
 					backgroundColor: custom.backgroundColor ? custom.backgroundColor : (dataset.backgroundColor || lineElementOptions.backgroundColor),
 					borderWidth: custom.borderWidth ? custom.borderWidth : (dataset.borderWidth || lineElementOptions.borderWidth),
 					borderColor: custom.borderColor ? custom.borderColor : (dataset.borderColor || lineElementOptions.borderColor),
@@ -63,11 +59,6 @@ module.exports = function(Chart) {
 					borderDash: custom.borderDash ? custom.borderDash : (dataset.borderDash || lineElementOptions.borderDash),
 					borderDashOffset: custom.borderDashOffset ? custom.borderDashOffset : (dataset.borderDashOffset || lineElementOptions.borderDashOffset),
 					borderJoinStyle: custom.borderJoinStyle ? custom.borderJoinStyle : (dataset.borderJoinStyle || lineElementOptions.borderJoinStyle),
-
-					// Scale
-					scaleTop: scale.top,
-					scaleBottom: scale.bottom,
-					scaleZero: scale.getBasePosition()
 				}
 			});
 
@@ -77,7 +68,6 @@ module.exports = function(Chart) {
 			helpers.each(points, function(point, index) {
 				me.updateElement(point, index, reset);
 			}, me);
-
 
 			// Update bezier control points
 			me.updateBezierControlPoints();
@@ -89,6 +79,14 @@ module.exports = function(Chart) {
 			var scale = me.chart.scale;
 			var pointElementOptions = me.chart.options.elements.point;
 			var pointPosition = scale.getPointPositionForValue(index, dataset.data[index]);
+
+			// Compatibility: If the properties are defined with only the old name, use those values
+			if ((dataset.radius !== undefined) && (dataset.pointRadius === undefined)) {
+				dataset.pointRadius = dataset.radius;
+			}
+			if ((dataset.hitRadius !== undefined) && (dataset.pointHitRadius === undefined)) {
+				dataset.pointHitRadius = dataset.hitRadius;
+			}
 
 			helpers.extend(point, {
 				// Utility
@@ -102,15 +100,15 @@ module.exports = function(Chart) {
 					y: reset ? scale.yCenter : pointPosition.y,
 
 					// Appearance
-					tension: custom.tension ? custom.tension : helpers.getValueOrDefault(dataset.tension, me.chart.options.elements.line.tension),
-					radius: custom.radius ? custom.radius : helpers.getValueAtIndexOrDefault(dataset.pointRadius, index, pointElementOptions.radius),
-					backgroundColor: custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointBackgroundColor, index, pointElementOptions.backgroundColor),
-					borderColor: custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.pointBorderColor, index, pointElementOptions.borderColor),
-					borderWidth: custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.pointBorderWidth, index, pointElementOptions.borderWidth),
-					pointStyle: custom.pointStyle ? custom.pointStyle : helpers.getValueAtIndexOrDefault(dataset.pointStyle, index, pointElementOptions.pointStyle),
+					tension: custom.tension ? custom.tension : helpers.valueOrDefault(dataset.lineTension, me.chart.options.elements.line.tension),
+					radius: custom.radius ? custom.radius : helpers.valueAtIndexOrDefault(dataset.pointRadius, index, pointElementOptions.radius),
+					backgroundColor: custom.backgroundColor ? custom.backgroundColor : helpers.valueAtIndexOrDefault(dataset.pointBackgroundColor, index, pointElementOptions.backgroundColor),
+					borderColor: custom.borderColor ? custom.borderColor : helpers.valueAtIndexOrDefault(dataset.pointBorderColor, index, pointElementOptions.borderColor),
+					borderWidth: custom.borderWidth ? custom.borderWidth : helpers.valueAtIndexOrDefault(dataset.pointBorderWidth, index, pointElementOptions.borderWidth),
+					pointStyle: custom.pointStyle ? custom.pointStyle : helpers.valueAtIndexOrDefault(dataset.pointStyle, index, pointElementOptions.pointStyle),
 
 					// Tooltip
-					hitRadius: custom.hitRadius ? custom.hitRadius : helpers.getValueAtIndexOrDefault(dataset.hitRadius, index, pointElementOptions.hitRadius)
+					hitRadius: custom.hitRadius ? custom.hitRadius : helpers.valueAtIndexOrDefault(dataset.pointHitRadius, index, pointElementOptions.hitRadius)
 				}
 			});
 
@@ -141,24 +139,6 @@ module.exports = function(Chart) {
 			});
 		},
 
-		draw: function(ease) {
-			var meta = this.getMeta();
-			var easingDecimal = ease || 1;
-
-			// Transition Point Locations
-			helpers.each(meta.data, function(point, index) {
-				point.transition(easingDecimal);
-			});
-
-			// Transition and Draw the line
-			meta.dataset.transition(easingDecimal).draw();
-
-			// Draw the points
-			helpers.each(meta.data, function(point) {
-				point.draw();
-			});
-		},
-
 		setHoverStyle: function(point) {
 			// Point
 			var dataset = this.chart.data.datasets[point._datasetIndex];
@@ -166,10 +146,10 @@ module.exports = function(Chart) {
 			var index = point._index;
 			var model = point._model;
 
-			model.radius = custom.hoverRadius ? custom.hoverRadius : helpers.getValueAtIndexOrDefault(dataset.pointHoverRadius, index, this.chart.options.elements.point.hoverRadius);
-			model.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointHoverBackgroundColor, index, helpers.getHoverColor(model.backgroundColor));
-			model.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderColor, index, helpers.getHoverColor(model.borderColor));
-			model.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderWidth, index, model.borderWidth);
+			model.radius = custom.hoverRadius ? custom.hoverRadius : helpers.valueAtIndexOrDefault(dataset.pointHoverRadius, index, this.chart.options.elements.point.hoverRadius);
+			model.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.valueAtIndexOrDefault(dataset.pointHoverBackgroundColor, index, helpers.getHoverColor(model.backgroundColor));
+			model.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.valueAtIndexOrDefault(dataset.pointHoverBorderColor, index, helpers.getHoverColor(model.borderColor));
+			model.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.valueAtIndexOrDefault(dataset.pointHoverBorderWidth, index, model.borderWidth);
 		},
 
 		removeHoverStyle: function(point) {
@@ -179,10 +159,10 @@ module.exports = function(Chart) {
 			var model = point._model;
 			var pointElementOptions = this.chart.options.elements.point;
 
-			model.radius = custom.radius ? custom.radius : helpers.getValueAtIndexOrDefault(dataset.radius, index, pointElementOptions.radius);
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointBackgroundColor, index, pointElementOptions.backgroundColor);
-			model.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.pointBorderColor, index, pointElementOptions.borderColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.pointBorderWidth, index, pointElementOptions.borderWidth);
+			model.radius = custom.radius ? custom.radius : helpers.valueAtIndexOrDefault(dataset.pointRadius, index, pointElementOptions.radius);
+			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.valueAtIndexOrDefault(dataset.pointBackgroundColor, index, pointElementOptions.backgroundColor);
+			model.borderColor = custom.borderColor ? custom.borderColor : helpers.valueAtIndexOrDefault(dataset.pointBorderColor, index, pointElementOptions.borderColor);
+			model.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.valueAtIndexOrDefault(dataset.pointBorderWidth, index, pointElementOptions.borderWidth);
 		}
 	});
 };

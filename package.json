@@ -1,9 +1,9 @@
 {
-  "name": "EthereumExplorerV2",
+  "name": "EthereumExplorer",
   "private": false,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A lightweight ethereum block explorer",
-  "repository": "https://github.com/carsenk/explorer",
+  "repository": "https://github.com/sthnaqvi/explorer",
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.3.1",

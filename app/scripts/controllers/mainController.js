@@ -129,95 +129,145 @@ angular.module('ethExplorer')
     })
 ;
 
-angular.module('filters', []).filter('truncate', function () {
-    return function (text, length, end) {
-        if (isNaN(length))
-            length = 10;
+angular.module('filters', [])
+    .filter('truncate', function () {
+        return function (text, length, end) {
+            if (isNaN(length))
+                length = 10;
 
-        if (!end)
-            end = "...";
+            if (!end)
+                end = "...";
 
-        if (text.length <= length || text.length - end.length <= length) {
-            return text;
-        } else {
-            return String(text).substring(0, length - end.length) + end;
-        }
-    };
-}).filter('diffFormat', function () {
-    //convert hash/solution to different kiloHash,MegaHash/solution and others
-    return function (diffi) {
-        if (isNaN(diffi)) return diffi;
-        if (diffi > 1000000000000000) {
-            var n = diffi / 1000000000000000;
-            return n.toFixed(3) + " P";
-        }
-        if (diffi > 1000000000000) {
-            var n = diffi / 1000000000000;
-            return n.toFixed(3) + " T";
-        }
-        if (diffi > 1000000000) {
-            var n = diffi / 1000000000;
-            return n.toFixed(3) + " G";
-        }
-        if (diffi > 1000000) {
-            var n = diffi / 1000000;
-            return n.toFixed(3) + " M";
-        }
-        var n = diffi / 1000;
-        return n.toFixed(3) + " K";
-    };
-}).filter('stylize', function () {
-    return function (style) {
-        if (isNaN(style)) return style;
-        var si = '<span class="btn btn-primary">' + style + '</span>';
-        return si;
-    };
-}).filter('stylize2', function () {
-    return function (text) {
-        if (isNaN(text)) return text;
-        var si = '<i class="fa fa-exchange"></i> ' + text;
-        return si;
-    };
-}).filter('hashFormat', function () {
-    //convert hash/second to different kiloHash,MegaHash/second and others
-    return function (hashr) {
-        if (isNaN(hashr)) return hashr;
-        if (hashr > 1000000000000000) {
-            var n = hashr / 1000000000000000;
-            return n.toFixed(3) + " PH/s";
-        }
-        if (hashr > 1000000000000) {
-            var n = hashr / 1000000000000;
-            return n.toFixed(3) + " TH/s";
-        }
-        if (hashr > 1000000000) {
-            var n = hashr / 1000000000;
-            return n.toFixed(3) + " GH/s";
-        }
-        if (hashr > 1000000) {
-            var n = hashr / 1000000;
-            return n.toFixed(3) + " MH/s";
-        }
-        var n = hashr / 1000;
-        return n.toFixed(3) + " KH/s";
-    };
-}).filter('gasFormat', function () {
-    return function (txt) {
-        if (isNaN(txt)) return txt;
-        var b = new BigNumber(txt);
-        return b.toFormat(0) + " m/s";
-    };
-}).filter('BigNum', function () {
-    return function (txt) {
-        if (isNaN(txt)) return txt;
-        var b = new BigNumber(txt);
-        var w = web3.fromWei(b, "ether");
-        return w.toFixed(6) + " ETH";
-    };
-}).filter('sizeFormat', function () {
-    return function (size) {
-        if (isNaN(size)) return size;
-        var s = size / 1000;
-        return s.toFixed(3) + " kB";
-    };
-});
+            if (text.length <= length || text.length - end.length <= length) {
+                return text;
+            } else {
+                return String(text).substring(0, length - end.length) + end;
+            }
+        };
+    })
+    .filter('diffFormat', function () {
+        //convert hash/solution to different kiloHash,MegaHash/solution and others
+        return function (diffi) {
+            if (isNaN(diffi)) return diffi;
+            if (diffi > 1000000000000000) {
+                var n = diffi / 1000000000000000;
+                return n.toFixed(3) + " P";
+            }
+            if (diffi > 1000000000000) {
+                var n = diffi / 1000000000000;
+                return n.toFixed(3) + " T";
+            }
+            if (diffi > 1000000000) {
+                var n = diffi / 1000000000;
+                return n.toFixed(3) + " G";
+            }
+            if (diffi > 1000000) {
+                var n = diffi / 1000000;
+                return n.toFixed(3) + " M";
+            }
+            var n = diffi / 1000;
+            return n.toFixed(3) + " K";
+        };
+    })
+    .filter('stylize', function () {
+        return function (style) {
+            if (isNaN(style)) return style;
+            var si = '<span class="btn btn-primary">' + style + '</span>';
+            return si;
+        };
+    })
+    .filter('stylize2', function () {
+        return function (text) {
+            if (isNaN(text)) return text;
+            var si = '<i class="fa fa-exchange"></i> ' + text;
+            return si;
+        };
+    })
+    .filter('hashFormat', function () {
+        //convert hash/second to different kiloHash,MegaHash/second and others
+        return function (hashr) {
+            if (isNaN(hashr)) return hashr;
+            if (hashr > 1000000000000000) {
+                var n = hashr / 1000000000000000;
+                return n.toFixed(3) + " PH/s";
+            }
+            if (hashr > 1000000000000) {
+                var n = hashr / 1000000000000;
+                return n.toFixed(3) + " TH/s";
+            }
+            if (hashr > 1000000000) {
+                var n = hashr / 1000000000;
+                return n.toFixed(3) + " GH/s";
+            }
+            if (hashr > 1000000) {
+                var n = hashr / 1000000;
+                return n.toFixed(3) + " MH/s";
+            }
+            var n = hashr / 1000;
+            return n.toFixed(3) + " KH/s";
+        };
+    })
+    .filter('gasFormat', function () {
+        return function (txt) {
+            if (isNaN(txt)) return txt;
+            var b = new BigNumber(txt);
+            return b.toFormat(0) + " m/s";
+        };
+    })
+    .filter('BigNum', function () {
+        return function (txt) {
+            if (isNaN(txt)) return txt;
+            var b = new BigNumber(txt);
+            var w = web3.fromWei(b, "ether");
+            return w.toFixed(6) + " ETH";
+        };
+    })
+    .filter('timestampAge', function () {
+        return function (timestamp) {
+            function dhms(ms) {
+                var days = Math.floor(ms / (24 * 60 * 60 * 1000));
+                var daysms = ms % (24 * 60 * 60 * 1000);
+                var hrs = Math.floor((daysms) / (60 * 60 * 1000));
+                var hrsms = daysms % (60 * 60 * 1000);
+                var mins = Math.floor((hrsms) / (60 * 1000));
+                var minsms = hrsms % (60 * 1000);
+                var secs = Math.floor((minsms) / (1000));
+
+                var diff = " ago";
+                var secsString = secs + " sec";
+                var minsString = mins + " min";
+                var hrsString = hrs + " hr";
+                var daysString = days + " day";
+
+                if (secs > 1)
+                    secsString = secs + " secs";
+                if (mins > 1)
+                    minsString = mins + " mins";
+                if (hrs > 1)
+                    hrsString = hrs + " hrs";
+                if (days > 1)
+                    daysString = days + " days";
+
+                if (days >= 1)
+                    return daysString + " " + hrsString + diff;
+                if (hrs >= 1)
+                    return hrsString + " " + minsString + diff;
+                if (mins >= 1)
+                    return minsString + " " + secsString + diff;
+
+                return secsString + diff;
+            }
+
+            var dateNow = moment.utc();
+            var txtTime = moment.utc(timestamp);
+            var diffInMs = dateNow.diff(txtTime);
+            return dhms(diffInMs);
+        };
+    })
+    .filter('sizeFormat', function () {
+        return function (size) {
+            if (isNaN(size)) return size;
+            var s = size / 1000;
+            return s.toFixed(3) + " kB";
+        };
+    });

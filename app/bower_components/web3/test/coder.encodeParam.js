@@ -108,6 +108,18 @@ describe('lib/solidity/coder', function () {
                                                     expected: '0000000000000000000000000000000000000000000000000000000000000020' +
                                                               '0000000000000000000000000000000000000000000000000000000000000020' +
                                                               '731a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b'});
+        test({ type: 'bytes', value: '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                                       'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' + 
+                                       'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' + 
+                                       'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' + 
+                                       'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1',   
+                                                    expected: '0000000000000000000000000000000000000000000000000000000000000020' +
+                                                              '000000000000000000000000000000000000000000000000000000000000009f' +
+                                                              'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                                                              'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                                                              'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                                                              'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' +
+                                                              'fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff100'});
         test({ type: 'string', value: 'gavofyork',  expected: '0000000000000000000000000000000000000000000000000000000000000020' +
                                                               '0000000000000000000000000000000000000000000000000000000000000009' +
                                                               '6761766f66796f726b0000000000000000000000000000000000000000000000'});
@@ -146,6 +158,11 @@ describe('lib/solidity/coder', function () {
                                                               '0000000000000000000000000000000000000000000000000000000000000001' +
                                                               '0000000000000000000000000000000000000000000000000000000000000002' +
                                                               '0000000000000000000000000000000000000000000000000000000000000003'});
+        test({ type: 'bytes1[4]', value: ['0xcf', '0x68', '0x4d', '0xfb'],      
+                                                    expected: 'cf00000000000000000000000000000000000000000000000000000000000000' +
+                                                              '6800000000000000000000000000000000000000000000000000000000000000' +
+                                                              '4d00000000000000000000000000000000000000000000000000000000000000' +
+                                                              'fb00000000000000000000000000000000000000000000000000000000000000'});
 
 
 
@@ -322,6 +339,13 @@ describe('lib/solidity/coder', function () {
                                                                       '0000000000000000000000000000000000000000000000000000000000000040' + 
                                                                       '331a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b' +
                                                                       '431a3afc00d1b1e3461b955e53fc866dcf303b3eb9f4c16f89e388930f48134b'});
+
+        test({ types: ['bytes3', 'bytes'], values: ['0xcf0011', '0x4d00000000000000000000000000000000000000000000000000000000000012'],
+                                                    expected: 'cf00110000000000000000000000000000000000000000000000000000000000' +
+                                                              '0000000000000000000000000000000000000000000000000000000000000040' + 
+                                                              '0000000000000000000000000000000000000000000000000000000000000020' +
+                                                              '4d00000000000000000000000000000000000000000000000000000000000012'});
+
     });
 });
 
