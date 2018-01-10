@@ -1,24 +1,24 @@
 {
-  "name": "ethereum-explorer",
+  "name": "eth-block-explorer",
   "description": "A lightweight ethereum block explorer",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/sthnaqvi/explorer",
   "license": "MIT",
   "private": false,
   "dependencies": {
     "jquery": "3.2.1",
     "bootstrap": "3.3.7",
-    "angular": "1.5.11",
-    "angular-route": "1.4.14",
-    "angular-loader": "~1.4.0",
-    "angular-mocks": "~1.4.0",
-    "angular-sanitize": "1.5.11",
+    "angular": "1.5.7",
+    "angular-route": "1.5.7",
+    "angular-loader": "1.5.7",
+    "angular-mocks": "1.5.7",
+    "angular-sanitize": "1.5.7",
     "angular-bootstrap": "2.5.0",
     "angular-bootstrap-simple-chat": "^0.4.0",
-    "moment": "2.20.1",
     "angular-moment": "1.2.0",
+    "moment": "2.20.1",
     "html5-boilerplate": "~5.2.0",
-    "web3": "0.14.0",
-    "chart.js": "^2.7.1"
+    "chart.js": "^2.1.6",
+    "web3": "^0.19.0"
   }
 }
