@@ -93,10 +93,23 @@ angular.module('ethExplorer')
                             console.log(err);
                             return getTransactionsFromBlock(blockNumber);
                         }
-                        $scope.recenttransactions = $scope.recenttransactions.concat(block.transactions);
-                        $scope.$apply();
-                        if ($scope.recenttransactions.length <= 10 && blockNumber > 0)
-                            getTransactionsFromBlock(--blockNumber)
+
+                        var transInBlock = [];
+                        var loopLimit = 10;
+
+                        if (loopLimit > block.transactions.length)
+                            loopLimit = block.transactions.length;
+
+                        for (var i = 0; i < loopLimit; i++) {
+                            transInBlock.push(block.transactions[i]);
+
+                            if (i === loopLimit - 1) {
+                                $scope.recenttransactions = $scope.recenttransactions.concat(transInBlock);
+                                $scope.$apply();
+                                if ($scope.recenttransactions.length <= 10 && blockNumber > 0)
+                                    getTransactionsFromBlock(--blockNumber)
+                            }
+                        }
                     });
                 }
             });
