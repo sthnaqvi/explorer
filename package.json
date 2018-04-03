@@ -7,7 +7,7 @@
   "private": false,
   "devDependencies": {
     "bower": "^1.3.1",
-    "http-server": "^0.6.1",
+    "http-webnode": "^1.0.1",
     "jasmine-core": "^2.3.4",
     "karma": "~0.12",
     "karma-chrome-launcher": "^0.1.12",
@@ -20,7 +20,7 @@
   "scripts": {
     "postinstall": "bower install",
     "prestart": "npm install",
-    "start": "http-server ./app -a localhost -p 8000 -c-1",
+    "start": "http-webnode ./app -a localhost -p 8000 -c-1",
     "pretest": "npm install",
     "test": "karma start karma.conf.js",
     "test-single-run": "karma start karma.conf.js  --single-run",
