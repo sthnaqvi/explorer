@@ -4,7 +4,7 @@
 
 ## Demo
 
-[https://sthnaqvi.github.io/explorer/](https://sthnaqvi.github.io/explorer/)
+[https://explorer.ethorbit.com/](https://explorer.ethorbit.com/)
 
 ##License
 
