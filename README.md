@@ -2,6 +2,10 @@
 
 ![ETH Block Explorer Screenshot](https://i.imgur.com/BlqT0dp.png)
 
+## Demo
+
+[https://sthnaqvi.github.io/explorer/](https://sthnaqvi.github.io/explorer/)
+
 ##License
 
 The code in this branch is licensed under GPLv3 (see LICENSE file)
