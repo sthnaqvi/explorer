@@ -18,7 +18,7 @@ Discuss this project at: [Reddit Page on /r/ethreum](https://www.reddit.com/r/et
 
 ##Donations
 
-ETH Address: 0xbe76Bc7079B2207932705594bA4F8e5a1BA7545F
+ETH Address: 0x1BDA9C6A37ECd91940df1E7559A8403ecE9806D1
 
 
 ##Installation
